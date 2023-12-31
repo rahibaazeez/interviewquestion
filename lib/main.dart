@@ -1,11 +1,23 @@
+
+
+
+
 import 'package:flutter/material.dart';
 import 'package:login/leadlist.dart';
 import 'package:login/login.dart';
+import 'package:login/providers/loginprovider.dart';
+import 'package:login/providers/userprovider.dart';
+import 'package:provider/provider.dart';
 
 import 'demo.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MultiProvider(providers: [
+    ChangeNotifierProvider(create: (context)=>UserProvider()),
+    ChangeNotifierProvider(create: (context)=>LoginProvider())
+
+  ],
+      child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {

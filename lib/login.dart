@@ -4,6 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:login/leadlist.dart';
+import 'package:login/providers/loginprovider.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -17,51 +19,14 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-  String? id;
-  Future loginScreen({required username,required password})async{
-    var data={
-      "username":username,
-      "password":password,
-    };
-    try {
-      var response = await post(
-        Uri.parse("https://crm-beta-api.vozlead.in/api/v2/account/login/"),
-        body: data,
-      );
-
-      if (response.statusCode == 200) {
-        var result = jsonDecode(response.body);
-        print(response.body);
-        if (result["data"] == null) {
-          Fluttertoast.showToast(msg: "Please register");
-        } else {
-          print("Token value: ${result["data"]["token"]}");
-          userCredential();
-          Fluttertoast.showToast(msg: "Welcome");
-          Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) => LeadList()));
-        }
-      }
-    }catch (error) {
-      print("Error during login: $error");
-      Fluttertoast.showToast(msg: "Failed to login. Please try again.");
-    }
-  }
-  userCredential()async{
-    SharedPreferences sharedPreferences =await SharedPreferences.getInstance();
-    sharedPreferences.setString("token", id.toString());
-    sharedPreferences.getString("token");
-  }
-  TextEditingController usernamecontroller =TextEditingController();
-  TextEditingController passwordcontroller=TextEditingController();
-  GlobalKey<FormState> formkey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
+    Provider.of<LoginProvider>(context,listen: false).userCredential();
     return Scaffold(
       body: SingleChildScrollView(
         child: Form(
-          key: formkey,
+          key:  Provider.of<LoginProvider>(context,listen: false).formkey,
           child: Column(
             children: [
               Container(
@@ -87,7 +52,7 @@ class _LoginState extends State<Login> {
               Padding(
                 padding: const EdgeInsets.all(10),
                 child: TextFormField(
-                  controller: usernamecontroller,
+                  controller:  Provider.of<LoginProvider>(context,listen: false).usernamecontroller,
                   decoration: InputDecoration(
                       label: Text("User name"), border: OutlineInputBorder()),
                 ),
@@ -98,7 +63,7 @@ class _LoginState extends State<Login> {
               Padding(
                 padding: const EdgeInsets.all(10),
                 child: TextFormField(
-                  controller: passwordcontroller,
+                  controller:  Provider.of<LoginProvider>(context,listen: false).passwordcontroller,
                   decoration: InputDecoration(
                       label: Text("Password"), border: OutlineInputBorder()),
                 ),
@@ -126,7 +91,7 @@ class _LoginState extends State<Login> {
                   child: ElevatedButton(
                       onPressed: (){
                         print("fhghjh");
-                        loginScreen(username: usernamecontroller.text,password: passwordcontroller.text);},
+                        Provider.of<LoginProvider>(context,listen: false).loginScreen(username:  Provider.of<LoginProvider>(context,listen: false).usernamecontroller.text,password:  Provider.of<LoginProvider>(context,listen: false).passwordcontroller.text,context:context );},
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue,
                         side: BorderSide.none,

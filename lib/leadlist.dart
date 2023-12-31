@@ -5,42 +5,16 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:login/providers/userprovider.dart';
+import 'package:provider/provider.dart';
 
-class LeadList extends StatefulWidget {
+class LeadList extends StatelessWidget {
   const LeadList({super.key});
 
   @override
-  State<LeadList> createState() => _LeadListState();
-}
-
-class _LeadListState extends State<LeadList> {
-   Future getData() async {
-
-      Response response = await get(
-        Uri.parse("https://crm-beta-api.vozlead.in/api/v2/lead/lead_list/"),
-  headers: {
-          "Authorization":"Token 92027d4c10d246c44007206174c01871582161e3"
-  }
-      );
-      print(response.body);
-      try {
-      if (response.statusCode == 200) {
-        var data = jsonDecode(response.body);
-        return data;
-      }
-    }catch (error) {
-      print("Error during API call: $error");
-      throw Exception("Failed to load data. Check your internet connection.");
-    }
-  }
-@override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    getData();
-  }
-  @override
   Widget build(BuildContext context) {
+    Provider.of<UserProvider>(context,listen: false).getData();
+
     return Scaffold(
       appBar: AppBar(
         leading: Icon(Icons.more_horiz),
@@ -48,7 +22,7 @@ class _LeadListState extends State<LeadList> {
         actions: [Icon(Icons.notifications)],
       ),
       body: FutureBuilder(
-        future: getData(),
+        future: Provider.of<UserProvider>(context,listen: false).getData(),
         builder: (context, AsyncSnapshot snapshot) {
           return ListView.builder(
             itemCount: snapshot.data["data"]["leads"].length,
@@ -59,7 +33,6 @@ class _LeadListState extends State<LeadList> {
                 );
               }
               if(snapshot.hasData){
-                print(snapshot);
                 return ListTile(
                   leading: Container(
                     height: 80,
